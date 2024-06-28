@@ -39,4 +39,4 @@ jobs:
             sudo docker pull ezdevmahesh/devops:latest
             sudo docker stop devops || true
             sudo docker rm devops || true
-            sudo docker run -d --name devops -p 3005:3000 ezdevmahesh/devops:latest
+            sudo docker run -d --name devops -p 80:80 ezdevmahesh/devops:latest
