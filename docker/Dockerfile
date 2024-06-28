@@ -2,9 +2,9 @@
 FROM php:8.1-apache
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www/devops
 
-# Copy the current directory contents into the container at /var/www/html
+# Copy the current directory contents into the container at /var/www/devops
 COPY . .
 
 RUN apt-get update && apt-get install -y software-properties-common zip unzip

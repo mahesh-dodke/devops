@@ -1,4 +1,4 @@
-name: Build and Deploy to Docker Hub
+name: Deploy to Docker Hub & VPS
 
 on:
   push:
@@ -28,3 +28,15 @@ jobs:
 
       - name: Verify Pushed Image
         run: docker pull ezdevmahesh/devops:latest
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull ezdevmahesh/devops:latest
+            sudo docker stop devops || true
+            sudo docker rm devops || true
+            sudo docker run -d --name devops -p 3005:3000 ezdevmahesh/devops:latest
