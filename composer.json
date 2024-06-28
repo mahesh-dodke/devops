@@ -1,0 +1,17 @@
+{
+    "name": "mahesh/devops",
+    "autoload": {
+        "psr-4": {
+            "Mahesh\\Devops\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mahesh Dodke",
+            "email": "ezdev.mahesh@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.10"
+    }
+}

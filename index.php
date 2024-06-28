@@ -1,5 +1,6 @@
 <?php
+require_once "vendor/autoload.php";
 
-echo "Hello World";
-echo "<br>";
-echo "First Devops Code";
+$hello = new Mahesh\Devops\Hello();
+echo $hello->hello();
+

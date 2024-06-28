@@ -1,0 +1,32 @@
+name: Continue Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  coding-standard:
+    name: Check Coding Standards
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.1', '8.2' ]
+
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Composer install
+        uses: ramsey/composer-install@v2
+
+      - name: Run PHP CodeSniffer
+        run: vendor/bin/phpcs --standard=PSR12 src/
