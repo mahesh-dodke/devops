@@ -1,4 +1,4 @@
-name: Continue Integration
+name: Continuous Integration
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '8.1', '8.2' ]
+        php-version: ["8.1", "8.2"]
 
     steps:
-      - name: 'Checkout code'
+      - name: "Checkout code"
         uses: actions/checkout@v4
 
       - name: Setup PHP
@@ -27,6 +27,12 @@ jobs:
 
       - name: Composer install
         uses: ramsey/composer-install@v2
+
+      - name: Download Parallel Link
+        run: curl -LsS https://github.com/php-parallel-lint/PHP-Parallel-Lint/releases/download/v1.3.0/parallel-lint.phar -o parallel-lint.phar
+
+      - name: Run Parallel Lint
+        run: php parallel-lint.phar src/
 
       - name: Run PHP CodeSniffer
         run: vendor/bin/phpcs --standard=PSR12 src/
