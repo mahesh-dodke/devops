@@ -2,9 +2,9 @@
 FROM php:8.1-apache
 
 # Set working directory
-WORKDIR /var/www/devops
+WORKDIR /var/www/html
 
-# Copy the current directory contents into the container at /var/www/devops
+# Copy the current directory contents into the container at /var/www/html
 COPY . .
 
 RUN apt-get update && apt-get install -y software-properties-common zip unzip
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y software-properties-common zip unzip
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install dependencies
-RUN composer install
+RUN composer install --no-dev --optimize-autoloader
 
 # Enable required Apache modules
 RUN a2enmod rewrite
