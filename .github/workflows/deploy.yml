@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - stage
+      - pre-prod
 
 jobs:
   build-and-push:
@@ -24,10 +26,10 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          tags: ezdevmahesh/devops:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref }}
 
       - name: Verify Pushed Image
-        run: docker pull ezdevmahesh/devops:latest
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref }}
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -36,7 +38,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo docker pull ezdevmahesh/devops:latest
-            sudo docker stop devops || true
-            sudo docker rm devops || true
-            sudo docker run -d --name devops -p 80:80 ezdevmahesh/devops:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref }}
+            sudo docker stop ${{ secrets.DOCKER_REPOSITORY }} || true
+            sudo docker rm ${{ secrets.DOCKER_REPOSITORY }} || true
+            sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }} -p 80:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref }}
