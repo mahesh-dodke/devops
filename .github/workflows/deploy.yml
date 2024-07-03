@@ -39,6 +39,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
-            sudo docker stop ${{ secrets.DOCKER_REPOSITORY }} || true
-            sudo docker rm ${{ secrets.DOCKER_REPOSITORY }} || true
-            sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }} -p 8000:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
+            sudo docker stop ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker rm ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} -p 8000:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
