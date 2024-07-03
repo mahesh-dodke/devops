@@ -23,7 +23,7 @@ resource "google_compute_firewall" "default" {
 }
 
 resource "google_compute_instance" "app_instance" {
-  count        = var.feature_branch != "" ? 1 : 0
+  count        = 1
   name         = "${var.feature_branch != "" ? "feature-${var.feature_branch}-${var.commit_hash}" : var.branch}-instance"
   machine_type = "e2-micro"
 
@@ -37,6 +37,7 @@ resource "google_compute_instance" "app_instance" {
     network = "default"
 
     access_config {
+      nat_ip = google_compute_address.ip_address.address
     }
   }
 
