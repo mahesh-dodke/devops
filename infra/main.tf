@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = var.gcp_credentials_file != "" ? file(var.gcp_credentials_file) : var.google_credentials
+  credentials = var.google_credentials
   project     = var.project_id
   region      = var.region
 }

@@ -1,9 +1,3 @@
-variable "gcp_credentials_file" {
-  description = "Path to the GCP credentials file"
-  type        = string
-  sensitive   = true
-}
-
 variable "google_credentials" {
   description = "JSON of the GCP credentials file"
   type        = string
