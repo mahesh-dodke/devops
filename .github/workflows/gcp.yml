@@ -47,4 +47,4 @@ jobs:
           echo "${GCP_CREDENTIALS}" > gcp-credentials.json
           cd infra
           terraform init
-          terraform apply -auto-approve -var="gcp_credentials_file=gcp-credentials.json" -var="branch=${{ github.ref_name }}" -var="domain=${{ secrets.DOMAIN }}" -var="docker_image=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}" -var="dns_zone=${{ secrets.GCP_DNS_ZONE }}" -var="project_id=${{ secrets.GCP_PROJECT_ID }}" -var="region=${{ secrets.GCP_REGION }}"
+          terraform apply -auto-approve -var="gcp_credentials_file=${{ secrets.GCP_CREDENTIALS }}" -var="branch=${{ github.ref_name }}" -var="domain=${{ secrets.DOMAIN }}" -var="docker_image=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}" -var="dns_zone=${{ secrets.GCP_DNS_ZONE }}" -var="project_id=${{ secrets.GCP_PROJECT_ID }}" -var="region=${{ secrets.GCP_REGION }}"
