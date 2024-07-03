@@ -67,7 +67,7 @@ jobs:
             sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} -p 8000:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
 
       - name: Deploy to EC2 on using stage branch (on port 9000)
-        if: ${{ github.ref_name == 'pre-prod' }}
+        if: ${{ github.ref_name == 'stage' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
