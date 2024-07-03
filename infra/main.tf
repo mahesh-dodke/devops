@@ -9,6 +9,19 @@ locals {
   domain_name = var.feature_branch != "" ? "${var.commit_hash}.${var.domain}" : var.branch == "main" ? var.domain : "${var.branch}.${var.domain}"
 }
 
+resource "google_compute_firewall" "default" {
+  name    = "allow-http-ports"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "8000", "9000"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["http-server"]
+}
+
 resource "google_compute_instance" "app_instance" {
   count        = var.feature_branch != "" ? 1 : 0
   name         = "${var.feature_branch != "" ? "feature-${var.feature_branch}-${var.commit_hash}" : var.branch}-instance"
@@ -57,7 +70,7 @@ resource "google_compute_address" "ip_address" {
 }
 
 resource "google_dns_record_set" "dns_record" {
-  name         = "${local.domain_name}."
+  name         = "${local.domain_name}"
   type         = "A"
   ttl          = 300
   managed_zone = var.dns_zone
@@ -67,4 +80,8 @@ resource "google_dns_record_set" "dns_record" {
 
 output "instance_ip" {
   value = google_compute_address.ip_address.address
+}
+
+output "domain_names" {
+  value = "${local.domain_name}"
 }
