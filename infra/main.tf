@@ -70,7 +70,7 @@ resource "google_compute_address" "ip_address" {
 }
 
 resource "google_dns_record_set" "dns_record" {
-  name         = "${local.domain_name}"
+  name         = "${local.domain_name}."
   type         = "A"
   ttl          = 300
   managed_zone = var.dns_zone
