@@ -16,7 +16,7 @@ resource "google_compute_firewall" "default" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "8000", "9000"]
+    ports    = ["80"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -44,24 +44,34 @@ resource "google_compute_instance" "app_instance" {
 
   metadata_startup_script = <<-EOF
     #!/bin/bash
+    set -e
+
     apt-get update
     apt-get install -y \
       apt-transport-https \
       ca-certificates \
       curl \
-      gnupg-agent \
+      gnupg \
+      lsb-release \
       software-properties-common
 
-    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-    add-apt-repository \
-      "deb [arch=amd64] https://download.docker.com/linux/debian \
-      $(lsb_release -cs) \
-      stable"
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+    echo \
+      "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+      $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     apt-get update
     apt-get install -y docker-ce docker-ce-cli containerd.io
 
+    systemctl start docker
+    systemctl enable docker
+
     docker run -d -p 80:80 ${var.docker_image}
+
+    # Logging for debugging
+    echo "Docker installation and container setup completed" >> /var/log/startup-script.log
+    docker ps >> /var/log/startup-script.log
   EOF
 
   tags = ["http-server"]

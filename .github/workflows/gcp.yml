@@ -49,6 +49,14 @@ jobs:
           echo 'docker_image="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}"' >> infra/terraform.tfvars
           echo 'dns_zone="${{ secrets.GCP_DNS_ZONE }}"' >> infra/terraform.tfvars
 
+      - name: Destroy existing resources
+        env:
+          TF_VAR_google_credentials: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          cd infra
+          terraform init
+          terraform destroy -auto-approve
+
       - name: Deploy with Terraform
         env:
           TF_VAR_google_credentials: ${{ secrets.GCP_CREDENTIALS }}
