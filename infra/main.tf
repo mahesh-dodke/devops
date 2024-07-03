@@ -83,6 +83,3 @@ output "instance_ip" {
   value = google_compute_address.ip_address.address
 }
 
-output "domain_names" {
-  value = "${local.domain_name}"
-}
