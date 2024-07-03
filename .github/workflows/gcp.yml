@@ -40,17 +40,19 @@ jobs:
       - name: Verify Pushed Image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
 
+      - name: Create terraform.tfvars
+        run: |
+          echo 'project_id="${{ secrets.GCP_PROJECT_ID }}"' >> infra/terraform.tfvars
+          echo 'region="${{ secrets.GCP_REGION }}"' >> infra/terraform.tfvars
+          echo 'branch="${{ github.ref_name }}"' >> infra/terraform.tfvars
+          echo 'domain="${{ secrets.DOMAIN }}"' >> infra/terraform.tfvars
+          echo 'docker_image="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}"' >> infra/terraform.tfvars
+          echo 'dns_zone="${{ secrets.GCP_DNS_ZONE }}"' >> infra/terraform.tfvars
+
       - name: Deploy with Terraform
         env:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          TF_VAR_google_credentials: ${{ secrets.GCP_CREDENTIALS }}
         run: |
           cd infra
-          export TF_VAR_docker_image=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
-          export TF_VAR_branch=${{ github.ref_name }}
-          export TF_VAR_domain=${{ secrets.DOMAIN }}
-          export TF_VAR_dns_zone=${{ secrets.GCP_DNS_ZONE }}
-          export TF_VAR_project_id=${{ secrets.GCP_PROJECT_ID }}
-          export TF_VAR_region=${{ secrets.GCP_REGION }}
-          export TF_VAR_gcp_credentials_file=${{ secrets.GCP_CREDENTIALS }}
           terraform init
           terraform apply -auto-approve
