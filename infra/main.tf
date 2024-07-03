@@ -21,6 +21,16 @@ resource "google_compute_firewall" "default" {
 
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["http-server"]
+
+  lifecycle {
+    ignore_changes = [
+      name,
+      network,
+      allow,
+      source_ranges,
+      target_tags,
+    ]
+  }
 }
 
 resource "google_compute_instance" "app_instance" {
