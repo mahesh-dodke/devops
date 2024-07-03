@@ -22,6 +22,6 @@ class Hello
 
     public function hello()
     {
-        return 'Hello ' . $this->name . 'from Stage!';
+        return 'Hello ' . $this->name . ' from Stage!';
     }
 }
