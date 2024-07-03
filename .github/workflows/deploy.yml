@@ -28,10 +28,46 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
 
+      - name: Build and Push Docker image with latest tag only from the main branch
+        if: ${{ github.ref_name == 'main' }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+
       - name: Verify Pushed Image
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
 
-      - name: Deploy to EC2
+      - name: Deploy to EC2 on using main branch (on port 80)
+        if: ${{ github.ref_name == 'main' }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
+            sudo docker stop ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker rm ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} -p 80:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
+
+      - name: Deploy to EC2 on using pre-prod branch (on port 8000)
+        if: ${{ github.ref_name == 'pre-prod' }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
+            sudo docker stop ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker rm ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} || true
+            sudo docker run -d --name ${{ secrets.DOCKER_REPOSITORY }}-${{ github.ref_name }} -p 8000:80 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ github.ref_name }}
+
+      - name: Deploy to EC2 on using stage branch (on port 9000)
+        if: ${{ github.ref_name == 'pre-prod' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
